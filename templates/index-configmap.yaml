@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-html
   labels:
-    app: {{ .Release.Name }}
+    {{- include "rana-flask.labels" . | nindent 4 }}
 data:
   index.html: |
-    {{ .Files.Get "files/index.html" | indent 4 }}
+{{ .Files.Get "files/index.html" | indent 4 }}
