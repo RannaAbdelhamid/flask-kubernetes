@@ -28,7 +28,7 @@ jobs:
         uses: azure/docker-login@v1
         with:
           login-server: ${{ env.ACR_NAME }}
-          username: ${{ secrets.DOCKER_USERNAME }}
+          username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push Docker image
