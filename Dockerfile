@@ -1,20 +1,20 @@
 FROM python:3.12-alpine3.18
 
-# Set working directory
+# Set working directory inside the container
 WORKDIR /application
 
-# Copy requirements first (to cache dependencies)
+# Copy requirements file first (for better Docker caching)
 COPY requirements.txt .
 
-# Install dependencies
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY app.py .
-COPY templates/ ./templates/   
+# Copy the entire project into the container
+# This includes app.py, templates/, static/, etc.
+COPY . .
 
-# Expose Flask port
+# Expose the Flask port
 EXPOSE 5000
 
-# Run the app
+# Run the Flask application
 CMD ["python3", "app.py"]
