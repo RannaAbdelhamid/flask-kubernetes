@@ -1,8 +1,10 @@
-replicaCount: 1
+replicaCount: 2
 
 image:
-  repository: myacr.azurecr.io/rana-flask
-  tag: latest
+  repository: ""
+  tag: rana
   pullPolicy: IfNotPresent
 
-resources: {}
+service:
+  type: LoadBalancer
+  port: 80

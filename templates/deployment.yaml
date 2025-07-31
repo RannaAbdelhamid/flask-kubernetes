@@ -4,7 +4,7 @@ metadata:
   name: {{ .Release.Name }}-deployment
   labels:
     app: {{ .Release.Name }}
-    {{- include "rana-flask.labels" . | nindent 4 }}
+    
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -14,13 +14,12 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}
-        {{- include "rana-flask.labels" . | nindent 8 }}
+
     spec:
       containers:
-        - name: rana-flask
+        - name: {{ .Release.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 5000
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+
