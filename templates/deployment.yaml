@@ -23,4 +23,11 @@ spec:
             - containerPort: 5000
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-
+          volumeMounts:   
+            - name: html-volume
+              mountPath: /app/templates/index.html 
+              subPath: index.html
+      volumes:          
+        - name: html-volume
+          configMap:
+            name: {{ .Release.Name }}-html
