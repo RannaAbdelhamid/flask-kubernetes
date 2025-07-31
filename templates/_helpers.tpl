@@ -1,7 +1,7 @@
 {{/*
 Common labels for the chart
 */}}
-{{- define "flask-kubernetes.labels" -}}
+{{- define "rana-flask.labels" -}}
 place: iti
 name: RanaAbdelhamid
 {{- end }}

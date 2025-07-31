@@ -6,7 +6,7 @@ on:
 
 env:
   ACR_NAME: ${{ vars.ACR_NAME }}  
-  IMAGE_NAME: Rana-FlaskApp
+  IMAGE_NAME: rana-flaskapp
   IMAGE_TAG: rana
   RELEASE_NAME: rana-flask
 
