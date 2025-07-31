@@ -60,4 +60,18 @@ jobs:
            --set image.tag=$IMAGE_TAG \
            --set replicaCount=2
 
-
+      - name: Get Flask app public IP
+        run: |
+          echo "Waiting for LoadBalancer to get an IP..."
+          for i in {1..30}; do
+            IP=$(kubectl get svc $RELEASE_NAME-service -n rana-namespace -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null)
+            if [ -n "$IP" ]; then
+              echo "✅ Flask app public IP: $IP"
+              echo "🌍 Access at: http://$IP:5000"
+              exit 0
+            fi
+            echo "Still waiting... ($i/30)"
+            sleep 10
+          done
+          echo "❌ Timed out waiting for public IP"
+          exit 1
