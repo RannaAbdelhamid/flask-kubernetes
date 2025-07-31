@@ -1,8 +1,21 @@
-FROM python:3.12.0b3-alpine3.18
-COPY . /application
+FROM python:3.12-alpine3.18
+
+# Set working directory
 WORKDIR /application
+
+# Copy dependency file first (for caching)
 COPY requirements.txt .
-COPY templates/ ./templates/
+
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY app.py .
+COPY templates/ ./templates/   # Flask HTML templates
+# COPY static/ ./static/         # Optional: CSS/JS if exists
+
+# Expose Flask port
 EXPOSE 5000
+
+# Run the app
 CMD ["python3", "app.py"]
