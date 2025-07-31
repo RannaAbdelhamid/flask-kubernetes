@@ -1,18 +1,8 @@
-replicaCount: 2
+replicaCount: 1
 
 image:
-  repository: "" 
-  tag: rana
+  repository: myacr.azurecr.io/rana-flask
+  tag: latest
   pullPolicy: IfNotPresent
 
-service:
-  type: LoadBalancer
-  port: 80
-
-resources:
-  limits:
-    cpu: 500m
-    memory: 256Mi
-  requests:
-    cpu: 250m
-    memory: 128Mi
+resources: {}

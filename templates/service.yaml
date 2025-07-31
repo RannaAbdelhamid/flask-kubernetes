@@ -3,12 +3,12 @@ kind: Service
 metadata:
   name: {{ .Release.Name }}-service
   labels:
+    app: {{ .Release.Name }}
     {{- include "rana-flask.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: LoadBalancer
   selector:
     app: {{ .Release.Name }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: 5000
       targetPort: 5000
-
