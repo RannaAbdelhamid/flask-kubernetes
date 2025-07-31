@@ -44,7 +44,7 @@ jobs:
           kind: Config
           clusters:
           - cluster:
-              server: ${KUBE_SERVER}
+              server: ${{ vars.KUBE_SERVER }}
               insecure-skip-tls-verify: true
             name: rana-cluster
           contexts:
@@ -56,8 +56,8 @@ jobs:
           users:
           - name: rana-user
             user:
-              username: ${KUBE_USERNAME}
-              password: ${KUBE_PASSWORD}
+              username: ${{ vars.KUBE_USERNAME }}
+              password: ${{ secrets.KUBE_PASSWORD }}
           EOF
         env:
           KUBE_SERVER: ${{ vars.KUBE_SERVER }}
