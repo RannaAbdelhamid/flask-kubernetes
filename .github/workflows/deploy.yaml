@@ -12,18 +12,18 @@ env:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      # 1️⃣ Checkout repository
+
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Build Docker image
       - name: Build Docker image
         run: |
           echo "Building Docker image: $ACR_NAME/$IMAGE_NAME:$IMAGE_TAG"
           docker build -t $ACR_NAME/$IMAGE_NAME:$IMAGE_TAG .
 
-      # 3️⃣ Login to Azure Container Registry
       - name: Login to ACR
         uses: azure/docker-login@v1
         with:
@@ -31,29 +31,24 @@ jobs:
           username: ${{ vars.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 4️⃣ Push Docker image to ACR
       - name: Push Docker image
         run: |
           echo "Pushing image to: $ACR_NAME/$IMAGE_NAME:$IMAGE_TAG"
           docker push $ACR_NAME/$IMAGE_NAME:$IMAGE_TAG
 
-      # 5️⃣ Set kubeconfig from GitHub Secret
       - name: Set kubeconfig from secret
         run: |
           mkdir -p ~/.kube
           echo "${{ secrets.KUBECONFIG_FILE }}" > ~/.kube/config
 
-      # 6️⃣ Test Kubernetes connection
       - name: Test Kubernetes connection
         run: kubectl get nodes
 
-      # 7️⃣ Install Helm
       - name: Install Helm
         uses: azure/setup-helm@v3
         with:
           version: latest
 
-      # 8️⃣ Deploy using Helm
       - name: Deploy Helm chart
         run: |
           helm upgrade --install $RELEASE_NAME . \
