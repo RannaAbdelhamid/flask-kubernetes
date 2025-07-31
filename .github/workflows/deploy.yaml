@@ -1,12 +1,14 @@
 name: Build and Deploy Flask App
 
 on:
-  workflow_dispatch: 
-
+  workflow_dispatch:  
+  push:
+    branches:
+      - main
 
 env:
-  ACR_NAME: ${{ vars.ACR_NAME }}  
-  IMAGE_NAME: rana-flaskapp
+  ACR_NAME: ${{ vars.ACR_NAME }}    
+  IMAGE_NAME: rana-flaskapp  
   IMAGE_TAG: rana
   RELEASE_NAME: rana-flask
 
@@ -17,42 +19,56 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Build Docker Image
       - name: Build Docker image
         run: |
+          echo "Building Docker image: $ACR_NAME/$IMAGE_NAME:$IMAGE_TAG"
           docker build -t $ACR_NAME/$IMAGE_NAME:$IMAGE_TAG .
 
-      # Login to Azure Container Registry
       - name: Login to ACR
         uses: azure/docker-login@v1
         with:
           login-server: ${{ env.ACR_NAME }}
-          username: ${{ vars.DOCKER_USERNAME }}
+          username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Push Docker Image to ACR
       - name: Push Docker image
-        run: docker push $ACR_NAME/$IMAGE_NAME:$IMAGE_TAG
+        run: |
+          echo "Pushing image to: $ACR_NAME/$IMAGE_NAME:$IMAGE_TAG"
+          docker push $ACR_NAME/$IMAGE_NAME:$IMAGE_TAG
 
-      # Set up kubectl
-      - name: Set up kubectl
-        uses: azure/setup-kubectl@v3
-        with:
-          version: latest
-
-      # Authenticate to AKS using kubeconfig secret
-      - name: Set kubeconfig
+      - name: Create kubeconfig
         run: |
           mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG_FILE }}" > ~/.kube/config
+          cat <<EOF > ~/.kube/config
+          apiVersion: v1
+          kind: Config
+          clusters:
+          - cluster:
+              server: ${KUBE_SERVER}
+              insecure-skip-tls-verify: true
+            name: rana-cluster
+          contexts:
+          - context:
+              cluster: rana-cluster
+              user: rana-user
+            name: rana-context
+          current-context: rana-context
+          users:
+          - name: rana-user
+            user:
+              username: ${KUBE_USERNAME}
+              password: ${KUBE_PASSWORD}
+          EOF
+        env:
+          KUBE_SERVER: ${{ secrets.KUBE_SERVER }}
+          KUBE_USERNAME: ${{ secrets.KUBE_USERNAME }}
+          KUBE_PASSWORD: ${{ secrets.KUBE_PASSWORD }}
 
-      # Install Helm
       - name: Install Helm
         uses: azure/setup-helm@v3
         with:
           version: latest
 
-      # Deploy using Helm
       - name: Deploy Helm chart
         run: |
           helm upgrade --install $RELEASE_NAME ./flask-kubernetes-chart \
