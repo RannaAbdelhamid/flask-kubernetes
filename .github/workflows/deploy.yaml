@@ -60,8 +60,8 @@ jobs:
               password: ${KUBE_PASSWORD}
           EOF
         env:
-          KUBE_SERVER: ${{ secrets.KUBE_SERVER }}
-          KUBE_USERNAME: ${{ secrets.KUBE_USERNAME }}
+          KUBE_SERVER: ${{ vars.KUBE_SERVER }}
+          KUBE_USERNAME: ${{ vars.KUBE_USERNAME }}
           KUBE_PASSWORD: ${{ secrets.KUBE_PASSWORD }}
 
       - name: Install Helm
