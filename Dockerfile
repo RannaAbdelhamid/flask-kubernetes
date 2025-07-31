@@ -1,7 +1,14 @@
-FROM python:3.12.0b3-alpine3.18
-COPY . /application
-WORKDIR /application
+FROM python:3.12-slim
+
+WORKDIR /app
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+COPY app.py .
+COPY templates/ ./templates/   # <-- Flask templates
+# COPY static/ ./static/         # (if you have static files)
+
 EXPOSE 5000
-CMD ["python3", "app.py"]
+
+CMD ["python", "app.py"]
